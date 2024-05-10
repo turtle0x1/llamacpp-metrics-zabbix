@@ -1,0 +1,96 @@
+{
+    "zabbix_export": {
+        "version": "6.4",
+        "template_groups": [
+            {
+                "uuid": "fa5277d7cdf44a81833ab65c2b1e8b8e",
+                "name": "Templates\/Applications"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "7a869701926a4294b3b972607f1fe8f3",
+                "template": "llama-cpp-metrics",
+                "name": "llama.cpp server",
+                "groups": [
+                    {
+                        "name": "Templates\/Applications"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "78c6a8b7794347d1814ba4be7263ffcd",
+                        "name": "llama-cpp-metrics",
+                        "type": "HTTP_AGENT",
+                        "key": "metrics",
+                        "delay": "60s",
+                        "trends": "0",
+                        "value_type": "TEXT",
+                        "url": "{$SCHEME}{$HOST}:{$PORT}{$URL}"
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "97e1438f67cc422ba2b2833a5677cf97",
+                        "name": "llama-cpp-metrics",
+                        "type": "DEPENDENT",
+                        "key": "lld_llama-cpp",
+                        "delay": "0",
+                        "item_prototypes": [
+                            {
+                                "name": "{#METRIC}",
+                                "type": "DEPENDENT",
+                                "key": "llama_metric[{#METRIC}]",
+                                "value_type": "FLOAT",
+                                "delay": "0",
+                                "uuid": "b361bafbf5b549f69e4cdde14e3b999c",
+                                "preprocessing": [
+                                    {
+                                        "type": "PROMETHEUS_PATTERN",
+                                        "parameters": [
+                                            "{__name__=\"{#METRIC}\"}",
+                                            "value"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "metrics"
+                                }
+                            }
+                        ],
+                        "master_item": {
+                            "key": "metrics"
+                        },
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#METRIC}",
+                                "path": "$['name']"
+                            }
+                        ],
+                        "preprocessing": [
+                            {
+                                "type": "PROMETHEUS_TO_JSON",
+                                "parameters": [
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$PORT}",
+                        "value": "8080"
+                    },
+                    {
+                        "macro": "{$SCHEME}",
+                        "value": "http:\/\/"
+                    },
+                    {
+                        "macro": "{$URL}",
+                        "value": "\/metrics"
+                    }
+                ]
+            }
+        ]
+    }
+}
